@@ -1,6 +1,8 @@
-# Order Management System (OMS)
+# HexOrders
 
-A robust, enterprise-grade prototype for an Order Management System built with **Java 21**, **Spring Boot 3.x** and meticulously structured using **Hexagonal Architecture (Ports and Adapters)** principles optimized for Cloud-Native environments.
+[![CI](https://github.com/SebastianOrtiz2194/hexorders/actions/workflows/ci.yml/badge.svg)](https://github.com/SebastianOrtiz2194/hexorders/actions/workflows/ci.yml)
+
+An order management service in **Java 21** and **Spring Boot 3**, structured with **Hexagonal Architecture (Ports and Adapters)**. The domain is plain Java; PostgreSQL, Redis and Kafka sit behind ports.
 
 ---
 
@@ -20,11 +22,8 @@ To bootstrap the application locally, ensure your environment meets the followin
 - **Docker** & **Docker Compose**
 - **Maven** (optional if utilizing the internal wrapper)
 
-### 1. Environment Variables (.env)
-The project adheres to the configuration standards of *12-Factor Apps*. Copy the template file to set your local credentials:
-```bash
-cp .env.example .env
-```
+### 1. Environment Variables (optional)
+All configuration comes from environment variables, and every variable has a default for local development, so the project runs without extra setup. To override a value (ports, database credentials, the JWT secret), create a `.env` file in the project root; Docker Compose reads it automatically. The variable names are in `docker-compose.yml` and `src/main/resources/application.yml`. `.env` is ignored by Git.
 
 ### 2. Bootstrapping Attached Resources (Docker Compose)
 Launch the required local infrastructure, comprising PostgreSQL, Redis, Kafka, Zookeeper, and Zipkin:
