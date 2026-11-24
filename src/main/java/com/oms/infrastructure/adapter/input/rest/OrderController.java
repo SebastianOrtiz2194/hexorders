@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -112,7 +113,7 @@ public class OrderController {
      */
     private OrderStatus parseStatus(String rawStatus) {
         try {
-            return OrderStatus.valueOf(rawStatus.toUpperCase());
+            return OrderStatus.valueOf(rawStatus.toUpperCase(Locale.ROOT));
         } catch (IllegalArgumentException ex) {
             throw new InvalidOrderException("Invalid status value: " + rawStatus);
         }

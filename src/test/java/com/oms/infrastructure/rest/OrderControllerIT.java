@@ -24,6 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -259,6 +260,34 @@ class OrderControllerIT {
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("CONFIRMED"));
+    }
+
+    @Test
+    @DisplayName("PATCH /orders/{id}/status - 200 OK for a lowercase status under a Turkish default locale")
+    void updateStatus_withLowercaseStatusUnderTurkishLocale_returns200() throws Exception {
+        // Given: Seed the database with a test order.
+        MvcResult createResult = mockMvc.perform(post(BASE_URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(buildValidCreateRequest())))
+                .andReturn();
+        OrderDTOs.OrderResponse created = objectMapper.readValue(
+                createResult.getResponse().getContentAsString(), OrderDTOs.OrderResponse.class);
+
+        OrderDTOs.UpdateStatusRequest updateRequest = new OrderDTOs.UpdateStatusRequest("confirmed");
+
+        // When / Then: In tr-TR, a locale-sensitive toUpperCase() turns "i" into a dotted "İ",
+        // which no enum constant matches. Parsing must not depend on the JVM default locale.
+        Locale originalLocale = Locale.getDefault();
+        Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+        try {
+            mockMvc.perform(patch(BASE_URL + "/" + created.id() + "/status")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(updateRequest)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value("CONFIRMED"));
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
     }
 
     @Test
